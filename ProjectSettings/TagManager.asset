@@ -3,7 +3,14 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Apple
+  - Meat
+  - Turkey
+  - Watermelon
+  - Food
+  - Ground
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -13,13 +20,13 @@ TagManager:
   - UI
   - 
   - 
-  - Ground
-  - 
+  - Rope
+  - Pivot
   - Player
+  - Hook
   - Enemy
-  - 
-  - 
-  - 
+  - Bullet
+  - Ground
   - 
   - 
   - 
@@ -38,6 +45,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 309992471
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
