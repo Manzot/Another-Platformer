@@ -43,15 +43,15 @@ GameObject:
   - component: {fileID: 1293147136647136565}
   - component: {fileID: 2811713070453557717}
   - component: {fileID: -2408707467947461848}
-  - component: {fileID: 608346430808267116}
   - component: {fileID: 9014906465000988145}
   - component: {fileID: 56636611965019645}
   - component: {fileID: 8723234568444374850}
   - component: {fileID: 6477177918165874233}
   - component: {fileID: 6477177918165874235}
+  - component: {fileID: 8828049201332543702}
   m_Layer: 10
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -112,7 +112,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: f8e9ae0fff93e714e8633a15b066e529, type: 3}
+  m_Sprite: {fileID: -8704524280614070974, guid: a61ad91785cd6f84a82e5395bbc5b871,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -260,22 +261,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &608346430808267116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1293147136647136564}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc4369a60d6e6824d8d7748cc39eb5a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 2.5
-  jumpSpeed: 5
-  groundCheck: 0
-  isSwinging: 0
 --- !u!114 &9014906465000988145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -304,7 +289,7 @@ MonoBehaviour:
   ropeJoint: {fileID: 2811713070453557717}
   crosshair: {fileID: 2002851653912426301}
   crosshairSprite: {fileID: 8017661069912822819}
-  playerMovement: {fileID: 608346430808267116}
+  playerMovement: {fileID: 0}
   isRopeAttached: 0
   ropeRenderer: {fileID: -2408707467947461848}
   angleDirection: {x: 0, y: 0}
@@ -353,9 +338,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59eee1b13ea181344adb65f902f40417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ropeHook: {x: 0, y: 0}
   speed: 500
-  jumpForce: 800
+  swingForce: 4
+  jumpSpeed: 3
+  groundCheck: 0
+  isSwinging: 0
   feet: {fileID: 1293147136159685873}
+--- !u!114 &8828049201332543702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293147136647136564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8292e865c620c84ca1df2224db813d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3422799650519378850
 GameObject:
   m_ObjectHideFlags: 0

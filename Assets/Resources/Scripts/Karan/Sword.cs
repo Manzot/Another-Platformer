@@ -9,18 +9,18 @@ public class Sword : MonoBehaviour
     public float inRange = 1f;
     Animator animator;
     public LayerMask EnemyLayer;
-    moveForward move;
+    Bullet move;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
        
     }
-    public void start()
+    public void Start()
     {
         if (move)
         {
-            move = GameObject.Find("Bullet").GetComponent<moveForward>();
+            move = GameObject.Find("Bullet").GetComponent<Bullet>();
         }
     }
     public void Attack()
@@ -43,13 +43,6 @@ public class Sword : MonoBehaviour
         if (swordPoint == null) return;
         Gizmos.DrawWireSphere(swordPoint.position, inRange);
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.gameObject.layer== LayerMask.NameToLayer("Bullet"))
-        {
-            Debug.Log("HEY");
-                //move.Move(-1 * move.dir);
-            
-        }
-    }
+   
+   
 }

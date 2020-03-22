@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5714105532789316386}
   - component: {fileID: -5665766183761746207}
   - component: {fileID: -2795468684925345399}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: RopeHook
   m_TagString: Untagged
   m_Icon: {fileID: 0}
