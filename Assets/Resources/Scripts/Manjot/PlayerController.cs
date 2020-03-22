@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     public float swingForce= 4f;
     public float jumpSpeed = 3f;
     private float jumpInput;
-    private float horizontalInput;
+    public float horizontalInput;
 
     int jumpCount = 1;
     int flipX = 0;
@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     
     Collider2D groundCheckColi;
     SpriteRenderer sprite;
-    Rigidbody2D rb;
+    public Rigidbody2D rb;
     Animator animator;
 
 
@@ -60,15 +60,16 @@ public class PlayerController : MonoBehaviour
                 Vector2 perpendicularDirection;
                 if (horizontalInput < 0)
                 {
-                    perpendicularDirection = new Vector2(-playerToHookDirection.y, playerToHookDirection.x);
-                    var leftPerpPos = (Vector2)transform.position + perpendicularDirection * -2f;
-                    Debug.DrawLine(transform.position, leftPerpPos, Color.green, 0f);
-                }
-                else
-                {
+
                     perpendicularDirection = new Vector2(playerToHookDirection.y, -playerToHookDirection.x);
                     var rightPerpPos = (Vector2)transform.position - perpendicularDirection * +2f;
                     Debug.DrawLine(transform.position, rightPerpPos, Color.green, 0f);
+                }
+                else
+                {
+                    perpendicularDirection = new Vector2(-playerToHookDirection.y, playerToHookDirection.x);
+                    var leftPerpPos = (Vector2)transform.position + perpendicularDirection * -2f;
+                    Debug.DrawLine(transform.position, leftPerpPos, Color.green, 0f);
                 }
 
                 var force = perpendicularDirection * swingForce;

@@ -500,7 +500,7 @@ PrefabInstance:
     - target: {fileID: 1293147136647136560, guid: 43fd701f8d962f84c8ef8773a1a7cfef,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.82
+      value: -0.53
       objectReference: {fileID: 0}
     - target: {fileID: 1293147136647136560, guid: 43fd701f8d962f84c8ef8773a1a7cfef,
         type: 3}
@@ -599,12 +599,12 @@ PrefabInstance:
     - target: {fileID: 5644785498193047000, guid: 31ddee99ca99c534aa93df131b2edfeb,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.31
+      value: 5.02
       objectReference: {fileID: 0}
     - target: {fileID: 5644785498193047000, guid: 31ddee99ca99c534aa93df131b2edfeb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.52
+      value: 2.41
       objectReference: {fileID: 0}
     - target: {fileID: 5644785498193047000, guid: 31ddee99ca99c534aa93df131b2edfeb,
         type: 3}
@@ -775,7 +775,7 @@ PrefabInstance:
     - target: {fileID: 4488798789194289996, guid: 5ddc4f6515854f1498bf5e5f621d3389,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.07
+      value: 4.32
       objectReference: {fileID: 0}
     - target: {fileID: 4488798789194289996, guid: 5ddc4f6515854f1498bf5e5f621d3389,
         type: 3}
@@ -864,7 +864,7 @@ PrefabInstance:
     - target: {fileID: 5518148150672763647, guid: 208047da0fe293f45a204dde2783e729,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.78
+      value: 6.0699997
       objectReference: {fileID: 0}
     - target: {fileID: 5518148150672763647, guid: 208047da0fe293f45a204dde2783e729,
         type: 3}
@@ -910,6 +910,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5518148151535551797, guid: 208047da0fe293f45a204dde2783e729,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.66
       objectReference: {fileID: 0}
     - target: {fileID: 5518148151649569089, guid: 208047da0fe293f45a204dde2783e729,
         type: 3}

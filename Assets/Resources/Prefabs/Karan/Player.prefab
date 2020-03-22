@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 6477177918165874233}
   - component: {fileID: 6477177918165874235}
   - component: {fileID: 8828049201332543702}
+  - component: {fileID: 238859847}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -323,8 +324,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.1832779, y: -0.1526168}
-  m_Size: {x: 0.41359532, y: 0.6195859}
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.65625, y: 0.8125}
   m_Direction: 0
 --- !u!114 &6477177918165874235
 MonoBehaviour:
@@ -339,12 +340,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ropeHook: {x: 0, y: 0}
-  speed: 500
-  swingForce: 4
-  jumpSpeed: 3
+  speed: 10
+  swingForce: 5
+  jumpSpeed: 5
+  horizontalInput: 0
   groundCheck: 0
   isSwinging: 0
   feet: {fileID: 1293147136159685873}
+  rb: {fileID: 0}
 --- !u!114 &8828049201332543702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -357,6 +360,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8292e865c620c84ca1df2224db813d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &238859847
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293147136647136564}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b1b26683f450ff94482d8b856500400f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3422799650519378850
 GameObject:
   m_ObjectHideFlags: 0

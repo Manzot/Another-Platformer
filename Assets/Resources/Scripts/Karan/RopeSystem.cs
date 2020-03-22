@@ -56,7 +56,7 @@ public class RopeSystem : MonoBehaviour
             {
                 crosshairSprite.enabled = false;
                 playerMovement.isSwinging = true;
-                playerMovement.ropeHook = ropePositions.Last();
+                playerMovement.ropeHook = hookRef.hitloc;
             }
         
         HandleInput(angleDirection);
@@ -99,19 +99,20 @@ public class RopeSystem : MonoBehaviour
 
             if (isRopeAttached == true) return;
 
-            else { 
-
+            else {
+                playerMovement.ropeHook = hookRef.hitloc;
                 ropePositions.Add(hookRef.hitloc);
                 ropeJoint.distance = Vector2.Distance(playerPosition, hookRef.hitloc);
-
                 ropeJoint.enabled = true;
                 ropeJoint.connectedBody = hookRef.hookrb;
+                
                 isRopeAttached = true;
 
             }
         }
-        else if (Input.GetKeyDown(KeyCode.Mouse1))
+        else if ((Input.GetKeyDown(KeyCode.Mouse1) && playerMovement.isSwinging == true))
         {
+            transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(playerMovement.horizontalInput*100f, 2f)*2, ForceMode2D.Impulse) ;
             ropeJoint.enabled = false;
             isRopeAttached = false;
             ropeRenderer.enabled = false;
@@ -121,10 +122,9 @@ public class RopeSystem : MonoBehaviour
     }
     private void HandleRopeLength()
     {
-        // 1
         if (Input.GetAxis("Vertical") >= 1f && isRopeAttached)
         {
-            Debug.Log("ok");
+        
             ropeJoint.distance -= Time.deltaTime * climbSpeed;
         }
         else if (Input.GetAxis("Vertical") < 0f && isRopeAttached)

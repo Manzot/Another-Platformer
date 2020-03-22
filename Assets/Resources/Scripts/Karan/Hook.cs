@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class Hook : MonoBehaviour
 {
-   public Rigidbody2D hookrb;
+    public Rigidbody2D hookrb;
     RopeSystem rope;
     public float moveSpeed = 30000f;
-    public bool canMove=true;
+    public bool canMove = true;
     public Vector2 hitloc;
     public Vector3 range;
 
@@ -20,7 +20,7 @@ public class Hook : MonoBehaviour
         range = new Vector3(10, 10, 0);
     }
 
-   public void Start()
+    public void Start()
     {
         hookrb = GetComponent<Rigidbody2D>();
         rope = GameObject.Find("Player").GetComponent<RopeSystem>();
@@ -29,14 +29,14 @@ public class Hook : MonoBehaviour
     {
         if (canMove)
         {
-            movement(rope.angleDirection);
+            Movement(rope.angleDirection);
         }
     }
 
-    private void  movement(Vector2 dir)
+    private void Movement(Vector2 dir)
     {
 
-        if (transform.position.y != range.y || transform.position.x != range.x)
+        if ((transform.position.y <= 10f || transform.position.x<=10f))
         {
             transform.GetComponent<Rigidbody2D>().AddForce(dir * moveSpeed * Time.fixedDeltaTime, ForceMode2D.Impulse);
     
