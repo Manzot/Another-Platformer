@@ -9,15 +9,12 @@ public class RopeSystem : MonoBehaviour
 {
 
     public SpringJoint2D ropeJoint;
-    public Transform crosshair;
-    public SpriteRenderer crosshairSprite;
-    public PlayerController playerMovement;
+    public PlayerController player;
     public bool isRopeAttached = false;
     private Vector2 playerPosition;
 
     public LineRenderer ropeRenderer;
 
-    public Vector2 angleDirection;
     GameObject hookShoot;
     GameObject currentHook;
     private List<Vector2> ropePositions = new List<Vector2>();
@@ -28,7 +25,7 @@ public class RopeSystem : MonoBehaviour
 
     private void Awake()
     {
-        playerMovement = GetComponent<PlayerController>();
+        player = GetComponent<PlayerController>();
         ropeJoint.enabled = false;
         playerPosition = transform.position;
         hookPrefab = Resources.Load<GameObject>("Prefabs/Karan/RopeHook");
@@ -37,29 +34,16 @@ public class RopeSystem : MonoBehaviour
 
     }
     void Update()
-    {
-        Vector3 worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
-        Vector3 faceDirection = worldMousePosition - transform.position;
-        float aimAngle = Mathf.Atan2(faceDirection.y, faceDirection.x);
-
-        if (aimAngle < 0)
-        {
-            aimAngle = Mathf.PI * 2 + aimAngle;
-
-        }
-
-        angleDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
-        playerPosition = transform.position;
-       
-            if (!isRopeAttached) { setCrosshairPoint(aimAngle); playerMovement.isSwinging = false; }
+    {  
+           if (!isRopeAttached) { player.setCrosshairPoint(player.aimAngle); player.isSwinging = false; }
             else
             {
-                crosshairSprite.enabled = false;
-                playerMovement.isSwinging = true;
-                playerMovement.ropeHook = hookRef.hitloc;
+                player.crosshairSprite.enabled = false;
+                player.isSwinging = true;
+                player.ropeHook = hookRef.hitloc;
             }
         
-        HandleInput(angleDirection);
+        HandleInput(player.angleDirection);
         if (hook)
         {
             UpdateRopePosition();
@@ -77,18 +61,6 @@ public class RopeSystem : MonoBehaviour
         }
     }
 
-    private void setCrosshairPoint(float aimAngle)
-    {
-        if (!crosshairSprite.enabled)
-        {
-            crosshairSprite.enabled = true;
-        }
-        float x = transform.position.x + 2f * Mathf.Cos(aimAngle);
-        float y = transform.position.y + 2f * Mathf.Sin(aimAngle);
-
-        Vector3 crosshairPosition = new Vector3(x, y, 0);
-        crosshair.transform.position = crosshairPosition;
-    }
     private void HandleInput(Vector2 aimDirection)
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -100,7 +72,7 @@ public class RopeSystem : MonoBehaviour
             if (isRopeAttached == true) return;
 
             else {
-                playerMovement.ropeHook = hookRef.hitloc;
+                player.ropeHook = hookRef.hitloc;
                 ropePositions.Add(hookRef.hitloc);
                 ropeJoint.distance = Vector2.Distance(playerPosition, hookRef.hitloc);
                 ropeJoint.enabled = true;
@@ -110,9 +82,9 @@ public class RopeSystem : MonoBehaviour
 
             }
         }
-        else if ((Input.GetKeyDown(KeyCode.Mouse1) && playerMovement.isSwinging == true))
+        else if ((Input.GetKeyDown(KeyCode.Mouse1) && player.isSwinging == true))
         {
-            transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(playerMovement.horizontalInput*100f, 2f)*2, ForceMode2D.Impulse) ;
+            transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(player.horizontalInput*100f, 2f)*2, ForceMode2D.Impulse) ;
             ropeJoint.enabled = false;
             isRopeAttached = false;
             ropeRenderer.enabled = false;

@@ -22,26 +22,31 @@ public class GameFlow: IManageables
     }
 
     #endregion
+    PlayerController player;
 
     public void Initialize()
     {
         EnemyManager.Instance.Initialize();
         PlayerManager.Instance.Initialize();
+        /*AbilityManager.Instance.Initialize(player);*/
     }
     public void PostInitialize()
     {
         EnemyManager.Instance.PostInitialize();
         PlayerManager.Instance.PostInitialize();
+        /*AbilityManager.Instance.PostInitialize();*/
     }
     public void Refresh()
     {
         EnemyManager.Instance.Refresh();
         PlayerManager.Instance.Refresh();
+        /*AbilityManager.Instance.Refresh();*/
     }
     public void PhysicsRefresh()
     {
         EnemyManager.Instance.PhysicsRefresh();
         PlayerManager.Instance.PhysicsRefresh();
+      /*  AbilityManager.Instance.PhysicsRefresh();*/
     }
 
 }

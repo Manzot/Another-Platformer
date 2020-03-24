@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 6477177918165874235}
   - component: {fileID: 8828049201332543702}
   - component: {fileID: 238859847}
+  - component: {fileID: -6189892778511512669}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -65,7 +66,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1293147136647136564}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.82, y: -0.82, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1293147136159685873}
@@ -173,7 +174,7 @@ LineRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1293147136647136564}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -288,12 +289,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ropeJoint: {fileID: 2811713070453557717}
-  crosshair: {fileID: 2002851653912426301}
-  crosshairSprite: {fileID: 8017661069912822819}
-  playerMovement: {fileID: 0}
+  player: {fileID: 0}
   isRopeAttached: 0
   ropeRenderer: {fileID: -2408707467947461848}
-  angleDirection: {x: 0, y: 0}
 --- !u!114 &8723234568444374850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -342,12 +340,16 @@ MonoBehaviour:
   ropeHook: {x: 0, y: 0}
   speed: 10
   swingForce: 5
-  jumpSpeed: 5
+  jumpForce: 3
   horizontalInput: 0
+  aimAngle: 0
   groundCheck: 0
   isSwinging: 0
   feet: {fileID: 1293147136159685873}
   rb: {fileID: 0}
+  angleDirection: {x: 0, y: 0}
+  crosshair: {fileID: 2002851653912426301}
+  crosshairSprite: {fileID: 8017661069912822819}
 --- !u!114 &8828049201332543702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -368,7 +370,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1293147136647136564}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: b1b26683f450ff94482d8b856500400f, type: 2}
   m_CullingMode: 0
@@ -379,6 +381,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &-6189892778511512669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293147136647136564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d16a7dfb4398f1b42af3ecdfe125b50a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slowdownFactor: 0.02
+  slowdownLength: 5
 --- !u!1 &3422799650519378850
 GameObject:
   m_ObjectHideFlags: 0

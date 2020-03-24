@@ -11,11 +11,12 @@ public class Hook : MonoBehaviour
     public bool canMove = true;
     public Vector2 hitloc;
     public Vector3 range;
-
+    PlayerController player;
     public static Hook currentHook { get; private set; }
 
     public void Awake()
     {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         currentHook = this;
         range = new Vector3(10, 10, 0);
     }
@@ -23,20 +24,20 @@ public class Hook : MonoBehaviour
     public void Start()
     {
         hookrb = GetComponent<Rigidbody2D>();
-        rope = GameObject.Find("Player").GetComponent<RopeSystem>();
+        rope = GameObject.FindGameObjectWithTag("Player").GetComponent<RopeSystem>();
     }
     void FixedUpdate()
     {
         if (canMove)
         {
-            Movement(rope.angleDirection);
+            Movement(player.angleDirection);
         }
     }
 
     private void Movement(Vector2 dir)
     {
 
-        if ((transform.position.y <= 10f || transform.position.x<=10f))
+        if ((transform.position.y <= transform.position.y + 10f || transform.position.x<= transform.position.x+10f))
         {
             transform.GetComponent<Rigidbody2D>().AddForce(dir * moveSpeed * Time.fixedDeltaTime, ForceMode2D.Impulse);
     
@@ -54,9 +55,10 @@ public class Hook : MonoBehaviour
         {
             hookrb.velocity = Vector3.zero;
             RaycastHit2D hit;
-            hit = Physics2D.Raycast(this.transform.position, rope.angleDirection);
+            hit = Physics2D.Raycast(this.transform.position, player.angleDirection);
             if(hit)
             {
+                Debug.Log(hit.collider.gameObject.name);
                 hitloc = hit.point;
                 hookrb.isKinematic = true;
                 rope.ropeJoint.connectedBody = hookrb;

@@ -13,7 +13,7 @@ public class Bullet : MonoBehaviour
 
     void Awake()
     {
-        dir = (GameObject.Find("Player").GetComponent<Transform>().position- this.transform.position).normalized;
+        dir = (GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>().position- this.transform.position).normalized;
         rb = GetComponent<Rigidbody2D>();
     }
 
