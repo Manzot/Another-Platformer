@@ -2,23 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System;
 
-public enum Abilities { Grappler,Rewind,SlowMotion}
+public enum Abilities { Grappler, Rewind, SlowMotion }
 public class PlayerController : MonoBehaviour
 {
-    public Vector2 ropeHook;
+    const float SLOMO_FACTOR = 0.3f;
 
+    public Vector2 ropeHook;
+    Collider2D groundCheckColi;
     public float speed;
     public float swingForce = 4f;
     public float jumpForce = 3f;
     private float jumpInput;
-    public float horizontalInput;
+    float horizontal;
     public float aimAngle;
+    float timeSlowCooldown = 10f;
 
-    int jumpCount = 1;
+    bool timeSlow;
+
+    //int jumpCount = 1;
     int flipX = 0;
 
     bool isJumping;
+    bool isAttacking;
     public bool groundCheck;
     public bool isSwinging;
 
@@ -30,84 +37,96 @@ public class PlayerController : MonoBehaviour
 
     public Vector2 angleDirection;
 
-    public Transform crosshair;
-    public SpriteRenderer crosshairSprite;
+    public GameObject crosshair;
     TimeManager timeManager;
+
+    List<Bullet> bulletList;
+    Vector3 deflect = new Vector3(-1, 1, -1);
+    Bullet bullet;
+
+
 
     public void Initialize()
     {
-        timeManager = GetComponent<TimeManager>();
+        //timeManager = GetComponent<TimeManager>();
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        timeManager = new TimeManager();
     }
     public void PostInitialize()
     {
-
+        bulletList = new List<Bullet>();
+        bulletList.Add(bullet);
     }
     public void Refresh()
     {
-        jumpInput = Input.GetAxis("Jump");
-        horizontalInput = Input.GetAxis("Horizontal");
-        float halfHeight = sprite.bounds.extents.y;
-        groundCheck = Physics2D.OverlapCircle(feet.position, 0.2f, LayerMask.GetMask("Ground", "IObject"));
 
-
-        Vector3 worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
-        Vector3 faceDirection = worldMousePosition - transform.position;
-        aimAngle = Mathf.Atan2(faceDirection.y, faceDirection.x);
-
-        if (aimAngle < 0)
+        foreach (Bullet b in bulletList)
         {
-            aimAngle = Mathf.PI * 2 + aimAngle;
-
+            bullet = GameObject.FindObjectOfType<Bullet>();
         }
 
-        angleDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
+        MovementAndDoubleJump();
+        setCrosshairPoint(CrossairDirection());
 
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            timeManager.slowMotion();
+            TimeSlowAbility();
+        }
+        TimeSlowReset();
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            Attack();           
+        }
+    }
+    public void PhysicsRefresh()
+    {
+
+
+    }
+
+    private void TimeSlowAbility()
+    {
+        if (!timeSlow)
+        {
+            timeManager.SlowMotion(SLOMO_FACTOR);
+            timeSlow = true;
+        }
+    }
+   
+    private void TimeSlowReset()
+    {
+        if (timeSlow)
+        {
+            if (timeManager.TimeReset(timeSlowCooldown) >= 1)
+            {
+                timeSlow = false;
+            }
         }
     }
 
-    public void PhysicsRefresh()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (horizontalInput < 0f || horizontalInput > 0f)
+        if(collision.gameObject.layer == LayerMask.NameToLayer("Bullet"))
         {
-            animator.SetFloat("Speed", Mathf.Abs(horizontalInput));
-            sprite.flipX = horizontalInput < 0f;
-
-            rb.velocity = new Vector2(horizontalInput * speed * Time.fixedDeltaTime, rb.velocity.y);
-
-            if (isSwinging)
+            if (timeSlow && isAttacking)
             {
-                Vector2 perpendicularDirection = CalculatePerpendicularDirection();
-                var force = perpendicularDirection * swingForce;
-                rb.AddForce(force, ForceMode2D.Impulse);
-            }
-            else
-            {
-                if (groundCheck)
-                {
-                    var groundForce = speed * 2f;
-                    rb.AddForce(new Vector2((horizontalInput * groundForce - rb.velocity.x) * groundForce, 0));
-                    rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y);
-                }
+                DeflectBullet(collision);
             }
         }
-        else
-        {
-            animator.SetFloat("Speed", 0f);
-        }
+    }
 
-        if (!isSwinging)
-        {
-            if (!groundCheck) return;
+    private void DeflectBullet(Collider2D collision)
+    {
 
-            IsJumping();
-        }
-      
+            if (timeSlow == true)
+            {
+                bullet.rb.gravityScale = 0;
+                bullet.moveSpeed = bullet.moveSpeed / 1.7f;
+                bullet.dir = -1 * bullet.dir;
+            }
+
     }
 
     /*Get a normalized direction vector from the player to the hook point 
@@ -119,7 +138,7 @@ public class PlayerController : MonoBehaviour
         var playerToHookDirection = (ropeHook - (Vector2)transform.position).normalized;
         Debug.DrawLine(transform.position, playerToHookDirection, Color.red, 0f);
 
-        if (horizontalInput > 0)
+        if (horizontal > 0)
         {
             perpendicularDirection = new Vector2(-playerToHookDirection.y, playerToHookDirection.x);
             var leftPerpPos = (Vector2)transform.position + perpendicularDirection * -2f;
@@ -136,32 +155,113 @@ public class PlayerController : MonoBehaviour
         return perpendicularDirection;
     }
 
-    /* If the Player is Not Swinging or not on the ground */
-    private void IsJumping()
+    public void MovementAndDoubleJump()
     {
-        isJumping = jumpInput > 0f;
-        if (isJumping)
+        horizontal = Input.GetAxis("Horizontal");
+        if (rb.velocity.x > 0)
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+        else if (rb.velocity.x < 0)
+            transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
+
+
+        rb.velocity = new Vector2(horizontal * speed * Time.deltaTime, rb.velocity.y);
+        animator.SetFloat("Speed", Mathf.Abs(horizontal));
+
+        if (Grounded())
         {
-            animator.SetBool("isJumping", true);
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                animator.SetBool("isJumping", true);
+                rb.AddForce(new Vector2(rb.velocity.x, jumpForce * Time.deltaTime), ForceMode2D.Impulse);
+               
+                // jumpCount--;
+            }
+            else
+            {
+                animator.SetBool("isJumping", false);
+            }
+            // if (jumpCount < 1)
+            // jumpCount = 1;
+            //}
+            //else
+            //{
+            //    if (jumpCount > 0 && Input.GetKeyDown(KeyCode.Space))
+            //    {
+            //        rb.AddForce(new Vector2(rb.velocity.x, jumpForce / 1.4f * Time.deltaTime), ForceMode2D.Impulse);
+            //        jumpCount--;
+            //    }
         }
-        else
+    }
+
+    public bool Grounded()
+    {
+        return groundCheckColi = Physics2D.OverlapCircle(feet.position, 0.1f, LayerMask.GetMask("Ground", "IObject"));
+    }
+
+    float CrossairDirection()
+    {
+        Vector3 worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
+        Vector3 faceDirection = worldMousePosition - transform.position;
+
+        aimAngle = Mathf.Atan2(faceDirection.y, faceDirection.x);
+
+        if (aimAngle < 0)
         {
-            animator.SetBool("isJumping", false);
+            return aimAngle = Mathf.PI * 2 + aimAngle;
         }
+        // angleDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
+        return aimAngle;
     }
 
     public void setCrosshairPoint(float aimAngle)
     {
-        if (!crosshairSprite.enabled)
-        {
-            crosshairSprite.enabled = true;
-        }
+        //if (!crosshairSprite.enabled)
+        //{
+        //    crosshairSprite.enabled = true;
+        //}
         float x = transform.position.x + 2f * Mathf.Cos(aimAngle);
         float y = transform.position.y + 2f * Mathf.Sin(aimAngle);
 
         Vector3 crosshairPosition = new Vector3(x, y, 0);
         crosshair.transform.position = crosshairPosition;
     }
+
+    public void SwingDirectionForce()
+    {
+        if (rb.velocity.x < 0f || rb.velocity.x > 0f)
+        {
+
+            if (isSwinging)
+            {
+                Vector2 perpendicularDirection = CalculatePerpendicularDirection();
+                var force = perpendicularDirection * swingForce;
+                rb.AddForce(force, ForceMode2D.Impulse);
+            }
+            //else
+            //{
+            //    if (groundCheck)
+            //    {
+            //        var groundForce = speed * 2f;
+            //        rb.AddForce(new Vector2((horizontal * groundForce - rb.velocity.x) * groundForce, 0));
+            //        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y);
+            //    }
+            //}
+        }
+    }
+
+    public void Attack()
+    {
+        if (!isAttacking)
+        {
+            animator.SetTrigger("Attack");
+            isAttacking = true;
+        }
+    }
+
+    public void DisableBools()
+    {
+        isAttacking = false;
+    }
+
 }
 

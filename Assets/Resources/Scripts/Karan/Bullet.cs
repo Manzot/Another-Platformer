@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float moveSpeed = 10f;
+    public float moveSpeed = 1f;
 
     public Vector3 dir;
     Transform Player;

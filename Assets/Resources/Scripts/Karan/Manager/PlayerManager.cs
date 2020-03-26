@@ -27,8 +27,8 @@ public class PlayerManager : IManageables
     #endregion
     public void Initialize()
     {
-        GameObject playerPrefab = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Karan/Player"));
-        player = playerPrefab.GetComponent<PlayerController>();
+        /* GameObject playerPrefab = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Karan/Player"));*/
+        player = GameObject.FindObjectOfType<PlayerController>();
         player.transform.position = new Vector2(10, 13);
         player.Initialize();
     }

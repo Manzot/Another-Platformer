@@ -61,7 +61,7 @@ public class Hook : MonoBehaviour
                 Debug.Log(hit.collider.gameObject.name);
                 hitloc = hit.point;
                 hookrb.isKinematic = true;
-                rope.ropeJoint.connectedBody = hookrb;
+              
             } 
            
         }

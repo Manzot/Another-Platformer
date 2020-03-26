@@ -35,10 +35,10 @@ public class RopeSystem : MonoBehaviour
     }
     void Update()
     {  
-           if (!isRopeAttached) { player.setCrosshairPoint(player.aimAngle); player.isSwinging = false; }
+           if (!isRopeAttached) { /*player.setCrosshairPoint(player.aimAngle);*/ player.isSwinging = false; }
             else
             {
-                player.crosshairSprite.enabled = false;
+                /*player.crosshairSprite.enabled = false;*/
                 player.isSwinging = true;
                 player.ropeHook = hookRef.hitloc;
             }
@@ -84,7 +84,7 @@ public class RopeSystem : MonoBehaviour
         }
         else if ((Input.GetKeyDown(KeyCode.Mouse1) && player.isSwinging == true))
         {
-            transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(player.horizontalInput*100f, 2f)*2, ForceMode2D.Impulse) ;
+          //  transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(player.horizontal*100f, 2f)*2, ForceMode2D.Impulse) ;
             ropeJoint.enabled = false;
             isRopeAttached = false;
             ropeRenderer.enabled = false;

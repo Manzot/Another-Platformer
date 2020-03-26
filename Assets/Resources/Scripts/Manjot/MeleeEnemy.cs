@@ -109,8 +109,8 @@ public class MeleeEnemy : EnemyUnit
             moveRight = !moveRight;
             moveTimeCounter = moveTime;
         }
-        if (moveRight) rb.velocity = new Vector2(1 * speed * Time.fixedDeltaTime, rb.velocity.y); // Move Right
-        else rb.velocity = new Vector2(-1 * speed * Time.fixedDeltaTime, rb.velocity.y); // Move Left
+        if (moveRight) rb.velocity = new Vector2(1 * speed * Time.deltaTime, rb.velocity.y); // Move Right
+        else rb.velocity = new Vector2(-1 * speed * Time.deltaTime, rb.velocity.y); // Move Left
     }
     /// Check to see if the target is in range of enemy or not
     bool TargetFound()
