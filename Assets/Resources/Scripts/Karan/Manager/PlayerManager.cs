@@ -27,13 +27,15 @@ public class PlayerManager : IManageables
     #endregion
     public void Initialize()
     {
-        /* GameObject playerPrefab = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Karan/Player"));*/
+        GameObject playerPrefab = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Karan/Player"));
         player = GameObject.FindObjectOfType<PlayerController>();
         player.transform.position = new Vector2(10, 13);
+        player.isAlive = true;
         player.Initialize();
     }
     public void PhysicsRefresh()
     {
+        if(player.isAlive)
         player.PhysicsRefresh();
     }
     public void PostInitialize()
@@ -42,25 +44,28 @@ public class PlayerManager : IManageables
     }
     public void Refresh()
     {
-        if (player.isActiveAndEnabled) 
+        if (player.isAlive) 
             player.Refresh();
         IsDead();
 
     }
-    public void PlayerSpawn(GameObject go)
+    public void PlayerSpawn()
     {
-        go.SetActive(true);
+        player.gameObject.SetActive(true);
+        player.Initialize();
+        
     }
     public void IsDead()
     {
-        if (!player.isActiveAndEnabled)
+
+        if (!player.isAlive)
         {
-            Vector3 deathLoc = player.transform.position;
+            Vector3 deathLoc = player.deathLoc;
             spawnTime -= Time.deltaTime;
             if (spawnTime <= 0)
             {
-                PlayerSpawn(player.gameObject);
-                player.transform.position = deathLoc + new Vector3(0, 5, 0);
+                PlayerSpawn();
+                player.transform.position = deathLoc;
                 player.transform.rotation = Quaternion.Euler(Vector3.zero);
                 spawnTime = 5f;
             }

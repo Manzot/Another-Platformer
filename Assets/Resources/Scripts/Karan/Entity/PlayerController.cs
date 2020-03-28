@@ -5,7 +5,7 @@ using UnityEditor;
 using System;
 
 public enum Abilities { Grappler, Rewind, SlowMotion }
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamage
 {
     const float SLOMO_FACTOR = 0.3f;
 
@@ -15,20 +15,23 @@ public class PlayerController : MonoBehaviour
     public float swingForce = 4f;
     public float jumpForce = 3f;
     private float jumpInput;
-    float horizontal;
+    public float horizontal;
     public float aimAngle;
     float timeSlowCooldown = 10f;
 
     bool timeSlow;
 
+
+    bool isRewinding;
+    List<PointInTime> pointsInTime;
+
     //int jumpCount = 1;
-    int flipX = 0;
 
     bool isJumping;
     bool isAttacking;
     public bool groundCheck;
     public bool isSwinging;
-
+    public bool isAlive;
 
     public Transform feet;
     public Rigidbody2D rb;
@@ -36,31 +39,45 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
 
     public Vector2 angleDirection;
+    public Vector3 deathLoc;
 
     public GameObject crosshair;
-    TimeManager timeManager;
+    TimeSlowMo timeSlowMo;
 
     List<Bullet> bulletList;
-    Vector3 deflect = new Vector3(-1, 1, -1);
     Bullet bullet;
+    Hook hook;
 
-
+    public float health = 100f;
+    private const float MAX_HEALTH = 100;
 
     public void Initialize()
     {
-        //timeManager = GetComponent<TimeManager>();
+        if (health == 0)
+        {
+            health = MAX_HEALTH;
+        }
+
+        isAlive = true;
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        timeManager = new TimeManager();
+        timeSlowMo = new TimeSlowMo();
     }
     public void PostInitialize()
     {
         bulletList = new List<Bullet>();
         bulletList.Add(bullet);
+
+        pointsInTime = new List<PointInTime>();
+
+        rb = GetComponent<Rigidbody2D>();
+        hook = FindObjectOfType<Hook>();
+        
     }
     public void Refresh()
     {
+
 
         foreach (Bullet b in bulletList)
         {
@@ -68,7 +85,7 @@ public class PlayerController : MonoBehaviour
         }
 
         MovementAndDoubleJump();
-        setCrosshairPoint(CrossairDirection());
+        SetCrosshairPoint(CrossairDirection());
 
         if (Input.GetKeyDown(KeyCode.T))
         {
@@ -77,29 +94,47 @@ public class PlayerController : MonoBehaviour
         TimeSlowReset();
         if (Input.GetKeyDown(KeyCode.K))
         {
-            Attack();           
+            Attack();
+        }
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            StartRewind();
+
+        }
+        if (Input.GetKeyUp(KeyCode.Return))
+        {
+
+            StopRewind();
         }
     }
     public void PhysicsRefresh()
     {
 
-
+        SwingDirectionForce();
+        if (isRewinding)
+        {
+            Rewind();
+        }
+        else
+        {
+            Record();
+        }
     }
 
     private void TimeSlowAbility()
     {
         if (!timeSlow)
         {
-            timeManager.SlowMotion(SLOMO_FACTOR);
+            timeSlowMo.SlowMotion(SLOMO_FACTOR);
             timeSlow = true;
         }
     }
-   
+
     private void TimeSlowReset()
     {
         if (timeSlow)
         {
-            if (timeManager.TimeReset(timeSlowCooldown) >= 1)
+            if (timeSlowMo.TimeReset(timeSlowCooldown) >= 1)
             {
                 timeSlow = false;
             }
@@ -108,11 +143,17 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.layer == LayerMask.NameToLayer("Bullet"))
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Bullet"))
         {
             if (timeSlow && isAttacking)
             {
                 DeflectBullet(collision);
+            }
+            else
+            {
+                TakeDamage(5);
+                collision.gameObject.SetActive(false);
+
             }
         }
     }
@@ -120,12 +161,12 @@ public class PlayerController : MonoBehaviour
     private void DeflectBullet(Collider2D collision)
     {
 
-            if (timeSlow == true)
-            {
-                bullet.rb.gravityScale = 0;
-                bullet.moveSpeed = bullet.moveSpeed / 1.7f;
-                bullet.dir = -1 * bullet.dir;
-            }
+        if (timeSlow == true)
+        {
+            bullet.rb.gravityScale = 0;
+            bullet.moveSpeed = bullet.moveSpeed / 1.7f;
+            bullet.dir = -1 * bullet.dir;
+        }
 
     }
 
@@ -155,6 +196,7 @@ public class PlayerController : MonoBehaviour
         return perpendicularDirection;
     }
 
+    /*Movement and jump of the player*/
     public void MovementAndDoubleJump()
     {
         horizontal = Input.GetAxis("Horizontal");
@@ -173,23 +215,23 @@ public class PlayerController : MonoBehaviour
             {
                 animator.SetBool("isJumping", true);
                 rb.AddForce(new Vector2(rb.velocity.x, jumpForce * Time.deltaTime), ForceMode2D.Impulse);
-               
+
                 // jumpCount--;
             }
             else
             {
                 animator.SetBool("isJumping", false);
             }
-            // if (jumpCount < 1)
-            // jumpCount = 1;
-            //}
-            //else
-            //{
-            //    if (jumpCount > 0 && Input.GetKeyDown(KeyCode.Space))
-            //    {
-            //        rb.AddForce(new Vector2(rb.velocity.x, jumpForce / 1.4f * Time.deltaTime), ForceMode2D.Impulse);
-            //        jumpCount--;
-            //    }
+            /* if (jumpCount < 1)
+             jumpCount = 1;
+            }
+            else
+            {
+                if (jumpCount > 0 && Input.GetKeyDown(KeyCode.Space))
+                {
+                    rb.AddForce(new Vector2(rb.velocity.x, jumpForce / 1.4f * Time.deltaTime), ForceMode2D.Impulse);
+                    jumpCount--;
+                }*/
         }
     }
 
@@ -209,16 +251,13 @@ public class PlayerController : MonoBehaviour
         {
             return aimAngle = Mathf.PI * 2 + aimAngle;
         }
-        // angleDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
+        angleDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
         return aimAngle;
     }
 
-    public void setCrosshairPoint(float aimAngle)
+    public void SetCrosshairPoint(float aimAngle)
     {
-        //if (!crosshairSprite.enabled)
-        //{
-        //    crosshairSprite.enabled = true;
-        //}
+
         float x = transform.position.x + 2f * Mathf.Cos(aimAngle);
         float y = transform.position.y + 2f * Mathf.Sin(aimAngle);
 
@@ -233,19 +272,13 @@ public class PlayerController : MonoBehaviour
 
             if (isSwinging)
             {
+
                 Vector2 perpendicularDirection = CalculatePerpendicularDirection();
+                /* rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y);*/
                 var force = perpendicularDirection * swingForce;
                 rb.AddForce(force, ForceMode2D.Impulse);
             }
-            //else
-            //{
-            //    if (groundCheck)
-            //    {
-            //        var groundForce = speed * 2f;
-            //        rb.AddForce(new Vector2((horizontal * groundForce - rb.velocity.x) * groundForce, 0));
-            //        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y);
-            //    }
-            //}
+
         }
     }
 
@@ -263,5 +296,65 @@ public class PlayerController : MonoBehaviour
         isAttacking = false;
     }
 
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
+        animator.SetTrigger("isHurt");
+        Debug.Log(health);
+        if (health <= 0)
+        {
+            animator.SetTrigger("isDead");
+
+            isAlive = false;
+            deathLoc = this.transform.position;
+            this.gameObject.SetActive(false);
+            PlayerManager.Instance.IsDead();
+        }
+    }
+
+    private void StartRewind()
+    {
+        this.GetComponent<SpriteRenderer>().material.color = Color.blue;
+        isRewinding = true;
+        rb.isKinematic = true;
+    }
+
+    private void StopRewind()
+    {
+        this.GetComponent<SpriteRenderer>().material.color = Color.white;
+        isRewinding = false;
+        rb.isKinematic = false;
+    }
+    private void Record()
+    {
+        if (pointsInTime.Count > Mathf.Round(2f / Time.fixedDeltaTime))
+        {
+            pointsInTime.RemoveAt(pointsInTime.Count - 1);
+        }
+        else
+        {
+            pointsInTime.Insert(0, new PointInTime(transform.position, transform.rotation));
+
+        }
+    }
+
+    private void Rewind()
+    {
+        if (pointsInTime.Count > 0)
+        {
+           
+            PointInTime pointInTime = pointsInTime[0];
+            transform.position = pointInTime.position;
+            transform.rotation = pointInTime.rotation;
+
+            pointsInTime.RemoveAt(0);
+        }
+        else
+        {
+            StopRewind();
+        }
+    }
 }
+
+
 

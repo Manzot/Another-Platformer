@@ -12,19 +12,25 @@ public class Hook : MonoBehaviour
     public Vector2 hitloc;
     public Vector3 range;
     PlayerController player;
+    
+    public LineRenderer ropeRenderer;
+    private float step =25f;
+
     public static Hook currentHook { get; private set; }
 
     public void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-        currentHook = this;
-        range = new Vector3(10, 10, 0);
+        ropeRenderer = GetComponent<LineRenderer>();
+       
     }
 
     public void Start()
     {
+        
         hookrb = GetComponent<Rigidbody2D>();
         rope = GameObject.FindGameObjectWithTag("Player").GetComponent<RopeSystem>();
+        ropeRenderer.enabled = true;
     }
     void FixedUpdate()
     {
@@ -36,39 +42,47 @@ public class Hook : MonoBehaviour
 
     private void Movement(Vector2 dir)
     {
-
-        if ((transform.position.y <= transform.position.y + 10f || transform.position.x<= transform.position.x+10f))
-        {
             transform.GetComponent<Rigidbody2D>().AddForce(dir * moveSpeed * Time.fixedDeltaTime, ForceMode2D.Impulse);
-    
-        }
-        else
+   
+        if (rope.hook)
         {
-            Destroy(this);
+            UpdateRopePosition();
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void UpdateRopePosition()
     {
+        ropeRenderer.SetPosition(0, rope.hookShoot.transform.position);
+        if (canMove)
+        {
+            ropeRenderer.SetPosition(1, rope.hook.transform.position);
 
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Rope")&&canMove)
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Rope") && canMove)
         {
             hookrb.velocity = Vector3.zero;
             RaycastHit2D hit;
             hit = Physics2D.Raycast(this.transform.position, player.angleDirection);
-            if(hit)
+            if (hit)
             {
                 Debug.Log(hit.collider.gameObject.name);
                 hitloc = hit.point;
+                
+                rope.joint.connectedBody = hookrb;
+                rope.joint.distance -= step*Time.deltaTime;
                 hookrb.isKinematic = true;
-              
-            } 
-           
+
+            }
+
         }
-      
+
         else
         {
-            rope.ropeRenderer.enabled = false;
+            ropeRenderer.enabled = false;
             rope.isRopeAttached = false;
             canMove = false;
         }

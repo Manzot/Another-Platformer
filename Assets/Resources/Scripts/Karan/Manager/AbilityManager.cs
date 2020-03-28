@@ -6,6 +6,7 @@ public class AbilityManager
 {
     PlayerController player;
     Ability[] abilities;
+    
     #region Singleton
     private static AbilityManager instance;
     public AbilityManager() { }
@@ -20,7 +21,9 @@ public class AbilityManager
 
     public void PhysicsRefresh()
     {
-        throw new System.NotImplementedException();
+        for(int i = 0; i < abilities.Length; i++) {
+        
+        }
     }
 
     public void PostInitialize()
@@ -31,6 +34,14 @@ public class AbilityManager
     public void Refresh()
     {
         throw new System.NotImplementedException();
+    }
+    public void UseAbility()
+    {
+
+    }
+    public void ReleaseAbility()
+    {
+
     }
 
 

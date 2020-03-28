@@ -15,7 +15,7 @@ public class Lose : MonoBehaviour
     {
 	    if (transform.position.y <= loseHeight)
 	    {
-			PlayerManager.Instance.PlayerSpawn(player.gameObject);
+			PlayerManager.Instance.IsDead();
 	    }
 	}
 }

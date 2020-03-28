@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TimeManager {
+public class TimeSlowMo {
     //public float slowdownFactor = 0.05f;
     // public float slowdownLength = 3f;
 

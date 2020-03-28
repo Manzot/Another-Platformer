@@ -18,7 +18,7 @@ public class Bullet : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Move(dir);
         
@@ -26,6 +26,7 @@ public class Bullet : MonoBehaviour
 
     public void Move(Vector3 dir)
     {
-        transform.position += dir * moveSpeed * Time.deltaTime;
+        transform.position+= dir * moveSpeed * Time.fixedDeltaTime;
+      //  transform.position += dir * moveSpeed * Time.deltaTime;
     }
 }
